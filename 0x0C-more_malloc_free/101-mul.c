@@ -1,109 +1,123 @@
+#include <stdlib.h>
+#include <stdio.h>
 #include "main.h"
 
+int check_digits(char *str);
+int _strlen(char *str);
+void print_error(void);
+
 /**
-* _memset - fills memory with a constant byte
-* @s: poiter represents memory block to fill
-* @b: characters to fill
-* @n: number of bytes to fill
-* Return: ^pointer to filled memory area
+* main - multiplies two positive numbers
+*
+* @argc: The number of command-line arguments provided
+* @argv: An array of pointers to the command-line arguments
+*
+* Return: Always 0
 */
 
-char *_memset(char *s, char b, unsigned int n)
+int main(int argc, char *argv[])
 {
-unsigned int i = 0;
+char *num1, *num2;
+int len1, len2, len, i, carry, digit1, digit2, *result, is_non_zero = 0;
 
-while (i < n)
+num1 = argv[1], num2 = argv[2];
+
+if (argc != 3 || !check_digits(num1) || !check_digits(num2))
+print_error();
+
+len1 = _strlen(num1);
+len2 = _strlen(num2);
+
+len = len1 + len2 + 1;
+result = malloc(sizeof(int) * len);
+
+if (!result)
+return (1);
+
+for (i = 0; i <= len1 + len2; i++)
+result[i] = 0;
+
+for (len1 = len1 - 1; len1 >= 0; len1--)
 {
-s[i] = b;
+digit1 = num1[len1] - '0';
+carry = 0;
+for (len2 = _strlen(num2) - 1; len2 >= 0; len2--)
+{
+digit2 = num2[len2] - '0';
+carry += result[len1 + len2 + 1] + (digit1 *digit2);
+result[len1 + len2 + 1] = carry % 10;
+carry /= 10;
+}
+if (carry > 0)
+result[len1 + len2 + 1] += carry;
+}
+
+for (i = 0; i < len - 1; i++)
+{
+if (result[i])
+is_non_zero = 1;
+if (is_non_zero)
+putchar(result[i] + '0');
+}
+
+if (!is_non_zero)
+putchar('0');
+putchar('\n');
+
+free(result);
+
+return (0);
+}
+
+/**
+* check_digits - checks if a string contains only digits
+*
+* @str: string to be evaluated
+*
+* Return: 1 if all characters are digits, 0 otherwise
+*/
+
+int check_digits(char *str)
+{
+int i = 0;
+
+while (str[i])
+{
+if (str[i] < '0' || str[i] > '9')
+return (0);
 i++;
 }
-return (s);
+return (1);
 }
 
 /**
-* _calloc - allocates memory
-* @nmemb: size of array
-* @size: of elements
-* Return: pointer to new allocated memory
+* _strlen - returns the length of a string
+*
+* @str: string to evaluate
+*
+* Return: the length of the string
 */
 
-void *_calloc(unsigned int nmemb, unsigned int size)
+int _strlen(char *str)
 {
-char *p;
+int i = 0;
 
-if (nmemb == 0 || size == 0)
-return (NULL);
-p = malloc(nmemb * size);
-if (p == NULL)
-return (NULL);
-_memset(p, 0, nmemb * size);
-return (p);
+while (str[i] != '\0')
+{
+i++;
+}
+
+return (i);
 }
 
 /**
-* multiply - initialize array whith 0 byte
-* @s1: string
-* @s2: string
+* print_error - handles errors for main function
+*
+* Return: void
 */
 
-void multiply(char *s1, char *s2)
+void print_error(void)
 {
-int i, l1, l2, total_l, f_digit, s_digit, res = 0, tmp;
-char *ptr;
-void *temp;
-
-l1 = _length(s1);
-l2 = _length(s2);
-tmp = l2;
-total_l = l1 + l2;
-ptr = _calloc(sizeof(int), total_l);
-temp = ptr;
-
-for (l1-- ; l1 >= 0; l1--)
-{
-f_digit = s1[l1] - '0';
-res = 0;
-l2 = tmp;
-for (l2-- ; l2 >= 0 ; l2--)
-{
-s_digit = s2[l2] - '0';
-res += ptr[l2 + l1 + 1] + (f_digit *s_digit);
-ptr[l1 + l2 + 1] = res % 10;
-res /= 10;
-}
-if (res)
-ptr[l1 + l2 + 1] = res % 10;
-}
-while (*ptr == 0)
-{
-ptr++;
-total_l--;
-}
-for (i = 0; i < total_l; i++)
-printf("%i", ptr[i]);
-printf("\n");
-free(temp);
-}
-
-/**
-* main - entry point
-* @argc: num of arg
-* @argv: arg of array
-* Return: 0 or 98
-*/
-
-int main(int argc, char **argv)
-{
-char *n1 = argv[1], *n2 = argv[2];
-
-if (argc != 3 || check_number(n1) || check_number(n2))
-error_exit();
-if (*n1 == '0' || *n2 == '0')
-{
-_putchar('0');
-_putchar('\n');
-}
-else
-multiply(n1, n2);
-return (0);
+printf("Error\n");
+exit(98);
 }
